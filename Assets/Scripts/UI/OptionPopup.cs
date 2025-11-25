@@ -139,13 +139,8 @@ public class OptionPopup : MonoBehaviour
 
     void Show()
     {
-        gameObject.SetActive(true);          // wichtig: aktivieren, falls Prefab inaktiv war
-        if (cg)
-        {
-            cg.alpha = 1f;
-            cg.blocksRaycasts = true;
-            cg.interactable = true;
-        }
+        gameObject.SetActive(true); // wichtig: aktivieren, falls Prefab inaktiv war
+        ApplyCanvasGroup(visible: true);
 
         // Make sure the close button stays hooked up even if prefab listeners were cleared.
         if (closeButton && closeButton.onClick.GetPersistentEventCount() == 0)
@@ -157,17 +152,15 @@ public class OptionPopup : MonoBehaviour
 
     public void Hide()
     {
-        if (cg)
-        {
-            cg.alpha = 0f;
-            cg.blocksRaycasts = false;
-            cg.interactable = false;
-        }
-        gameObject.SetActive(false);
+        ApplyCanvasGroup(visible: false);
         onSelect = null;
     }
 
-    void HideInstant() => Hide();
+    void HideInstant()
+    {
+        ApplyCanvasGroup(visible: false);
+        onSelect = null;
+    }
 
     bool TryConfigureEntry(GameObject go, string text, int idx, bool interactable)
     {
@@ -181,5 +174,21 @@ public class OptionPopup : MonoBehaviour
     {
         onSelect?.Invoke(idx);
         Hide();
+    }
+
+    void ApplyCanvasGroup(bool visible, bool keepInteractable = false, float? overrideAlpha = null)
+    {
+        if (!cg) return;
+        cg.alpha = overrideAlpha ?? (visible ? 1f : 0f);
+        if (visible || keepInteractable)
+        {
+            cg.interactable = true;
+            cg.blocksRaycasts = true;
+        }
+        else
+        {
+            cg.interactable = false;
+            cg.blocksRaycasts = false;
+        }
     }
 }

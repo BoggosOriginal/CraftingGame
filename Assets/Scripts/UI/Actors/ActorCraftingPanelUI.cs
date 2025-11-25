@@ -67,6 +67,12 @@ public class ActorCraftingPanelUI : MonoBehaviour
         catalog = RecipeCatalogService.Instance ?? FindObjectOfType<RecipeCatalogService>();
     }
 
+    void Start()
+    {
+        // Ensure the crafting UI starts hidden until explicitly opened
+        Close();
+    }
+
     void OnEnable()
     {
         WireButtons();
